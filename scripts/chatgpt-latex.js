@@ -76,8 +76,6 @@ function stopLatexConversionInjectionTimer() {
 }
 // startLatexConversionTimer();
 
-
-
 // ----------------- Styles for the new UI -----------------
 function addLatexConversionStyles() {
     const styles = `
@@ -203,6 +201,7 @@ function createLatexConversionUI() {
             toggleIcon.classList.add("maximized");
             controlDiv.classList.remove("minimized");
         }
+        saveSettings(controlDiv); // Save settings when panel state is changed
     };
 
     // Add event listener to the toggle switch
@@ -212,17 +211,57 @@ function createLatexConversionUI() {
         } else {
             stopLatexConversionInjectionTimer();
         }
+        saveSettings(controlDiv); // Save settings when changed
     });
 
+    loadSettings(controlDiv); // Load saved settings after UI is created
+}
+
+// ----------------- Save and Load Settings -----------------
+function saveSettings(controlDiv) {
+    const isChecked = document.getElementById("latexToggleSwitch").checked;
+    localStorage.setItem('latexToggleSwitchState', isChecked);
+    localStorage.setItem('latexPanelState', controlDiv.classList.contains("minimized") ? "minimized" : "maximized");
+}
+
+function loadSettings(controlDiv) {
+    const isChecked = localStorage.getItem('latexToggleSwitchState') === 'true';
+    const panelState = localStorage.getItem('latexPanelState');
+
+    document.getElementById("latexToggleSwitch").checked = isChecked;
+    if (isChecked) {
+        startLatexConversionInjectionTimer();
+    } else {
+        stopLatexConversionInjectionTimer();
+    }
+
+    const toggleIcon = controlDiv.querySelector(".latex-toggle");
+    const title = controlDiv.querySelector(".latex-title");
+    if (panelState === "minimized") {
+        controlDiv.querySelector(".main").style.display = "none";
+        title.style.display = "none";
+        toggleIcon.classList.remove("maximized");
+        toggleIcon.classList.add("minimized");
+        controlDiv.classList.add("minimized");
+    } else {
+        controlDiv.querySelector(".main").style.display = "block";
+        title.style.display = "inline-block";
+        toggleIcon.classList.remove("minimized");
+        toggleIcon.classList.add("maximized");
+        controlDiv.classList.remove("minimized");
+    }
 }
 
 // ----------------- Initialization -----------------
-addLatexConversionStyles();
 
-// Ensure the UI is created after the DOM is fully loaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createLatexConversionUI);
+    document.addEventListener('DOMContentLoaded', () =>
+    {
+        addLatexConversionStyles();
+        createLatexConversionUI();
+    });
 } else {
+    addLatexConversionStyles();
     createLatexConversionUI();
 }
 
