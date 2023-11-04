@@ -21,13 +21,37 @@
     let latexConversionInjectionInterval;
     const conversionInjectionIntervalTime = 1000; // 5 seconds, adjust as needed
 
+    function replaceLatexBlock(inputString) {
+        const inputSize = inputString.length;
+        let newString = inputString.split(''); 
+        for (let i = 0; i < inputSize - 1; i++) {
+             if(inputString[i] == '\\' && inputString[i+1] == '[') {
+                newString[i] = '$';
+                newString[i+1] = '$';
+             }
+             else if(inputString[i] == '\\' && inputString[i+1] == ']') {
+                newString[i] = '$';
+                newString[i+1] = '$';
+             }
+        }
+        return newString.join(''); 
+    }
+    
     function chatgptOutputStringToLatex(inputString) {
         // Convert \( ... \) to $
+        // do it one by one
+        // 1.replace \( with $
+        // 2.replace \) with $
+        // 3.replace \[ with $$
+        // 4.replace \] with $$
+        console.log(`inputString: ${inputString}`);
         let result = inputString.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-    
+        
+        console.log(`after replace \( with $: ${result}`);
         // Convert \[ ... \] to $$
-        result = result.replace(/\\\[|\\\]/g, '$$');
-    
+        // result = result.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
+        result = replaceLatexBlock(result);
+        console.log(`after replace \[ with $$: ${result}`);
         return result;
     }
 
