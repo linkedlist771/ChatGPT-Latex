@@ -2,7 +2,7 @@
 // @name         🚀🚀LatexForChatGPT🚀🚀
 // @namespace         https://github.com/linkedlist771/ChatGPT-Latex
 // @supportURL        https://github.com/linkedlist771/ChatGPT-Latex
-// @version       0.0.1
+// @version       0.0.2
 // @description  latex for chatgpt
 // @author       LLinkedList771
 // @run-at       document-start
