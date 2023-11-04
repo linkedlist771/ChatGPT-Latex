@@ -44,14 +44,11 @@
         // 2.replace \) with $
         // 3.replace \[ with $$
         // 4.replace \] with $$
-        console.log(`inputString: ${inputString}`);
         let result = inputString.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
         
-        console.log(`after replace \( with $: ${result}`);
         // Convert \[ ... \] to $$
         // result = result.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
         result = replaceLatexBlock(result);
-        console.log(`after replace \[ with $$: ${result}`);
         return result;
     }
 
