@@ -14,15 +14,15 @@ This project aims to implement the functionality that interact with the LaTex wh
 
 ---
 
-![image-20231104182955940](../../../AppData/Roaming/Typora/typora-user-images/image-20231104182955940.png)
+![image-20231104182955940](assets/image-20231104182955940.png)
 
 - Before :
 
-![image-20231104183015187](../../../AppData/Roaming/Typora/typora-user-images/image-20231104183015187.png)
+![image-20231104183015187](assets/image-20231104183015187.png)
 
 - After:
 
-![image-20231104183049386](../../../AppData/Roaming/Typora/typora-user-images/image-20231104183049386.png)
+![image-20231104183049386](assets/image-20231104183049386.png)
 
 
 
