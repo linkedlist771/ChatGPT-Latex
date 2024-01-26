@@ -2,7 +2,7 @@
 // @name         🚀🚀LatexForChatGPT🚀🚀
 // @namespace         https://github.com/linkedlist771/ChatGPT-Latex
 // @supportURL        https://github.com/linkedlist771/ChatGPT-Latex
-// @version       0.0.2
+// @version       0.0.4
 // @description  latex for chatgpt
 // @author       LLinkedList771
 // @run-at       document-start
@@ -20,7 +20,8 @@
 
     let latexConversionInjectionInterval;
     const conversionInjectionIntervalTime = 1000; // 5 seconds, adjust as needed
-
+    let currentGPT4Model = "gpt-4"; // Default model
+    let gpt4InjectionInterval;
     function replaceLatexBlock(inputString) {
         const inputSize = inputString.length;
         let newString = inputString.split(''); 
@@ -54,7 +55,7 @@
 
     function findAllCopyButtons() {
         // class : flex ml-auto
-        const copyButtons = document.querySelectorAll('button.flex.ml-auto');
+        const copyButtons = document.querySelectorAll('button.flex'); //flex items-center
         return copyButtons;
     }
 
@@ -95,6 +96,11 @@ function stopLatexConversionInjectionTimer() {
         console.log("Latex conversion timer is not running.");
     }
 }
+
+
+
+
+
 // startLatexConversionTimer();
 
 // ----------------- Styles for the new UI -----------------
@@ -185,7 +191,86 @@ function addLatexConversionStyles() {
     document.head.appendChild(styleSheet);
 }
 
+// ----------------- Rewrite the post function -----------------
+function injectGPTPost(){
+    let realFetch = window.fetch;
+    window.fetch = function(url, init) {
+        if (!isScriptEnabled) {
+            return realFetch(url, init);
+        }
+        try {
+            if (init && init.method === 'POST') {
+                let data = JSON.parse(init.body);
+                if (data.hasOwnProperty('model')) {
+                    data.model = currentGPT4Model;
+                    init.body = JSON.stringify(data);
+                }
+            }
+            return realFetch(url, init);
+        } catch (e) {
+            console.error('在处理请求时出现错误:', e);
+            return realFetch(url, init);
+        }
+    };
+}
+
+
+function startGPT4InjectionTimer() {
+    if (!gpt4InjectionInterval) {
+        gpt4InjectionInterval = setInterval(injectGPTPost, conversionInjectionIntervalTime);
+        console.log("GPT4 timer started.");
+    } else {
+        console.log("GPT4 timer is already running.");
+    }
+}
+
+function stopGPT4InjectionTimer() {
+    if (gpt4InjectionInterval) {
+        clearInterval(gpt4InjectionInterval);
+        gpt4InjectionInterval = null;
+        console.log("GPT4 timer stopped.");
+    } else {
+        console.log("GPT4 timer is not running.");
+    }
+}
+
 // ----------------- UI Creation for the new functions -----------------
+
+function addListenerToLatexConversionToggleSwitch(controlDiv) {
+    document.getElementById("latexToggleSwitch").addEventListener("change", function() {
+        if (this.checked) {
+            startLatexConversionInjectionTimer();
+        } else {
+            stopLatexConversionInjectionTimer();
+        }
+        saveSettings(controlDiv); // Save settings when changed
+    });
+}
+
+function addListenerToGPT4ToggleSwitch(controlDiv) {
+    let modelToggleSwitchList = {
+        "gpt4ToggleSwitch": "gpt-4",
+        "gpt4BrowsingToggleSwitch": "gpt-4-browsing",
+        "gpt4PluginToggleSwitch": "gpt-4-plugin",
+        "gpt4CodeInterpreterToggleSwitch": "gpt-4-code-interpreter",
+        "gpt4DalleToggleSwitch": "gpt-4-dalle"
+    };
+    for (let modelToggleSwitch in modelToggleSwitchList) {
+        let modelKey = modelToggleSwitch;
+        let modelValue = modelToggleSwitchList[modelToggleSwitch];
+        document.getElementById(modelKey).addEventListener("change", function() {
+            if (this.checked) {
+                currentGPT4Model = modelValue;
+                startGPT4InjectionTimer();
+            } else {
+                stopGPT4InjectionTimer();
+            }
+            saveSettings(controlDiv); // Save settings when changed
+        });
+    }
+}
+
+
 function createLatexConversionUI() {
     const controlDiv = document.createElement('div');
     controlDiv.className = 'latex-conversion-panel';
@@ -201,6 +286,7 @@ function createLatexConversionUI() {
                 <span class="slider round"></span>
             </label>
             <span style="margin-left: 5px;">Start/Stop </span>
+<br>
         </div>
     `;
 
@@ -226,15 +312,8 @@ function createLatexConversionUI() {
     };
 
     // Add event listener to the toggle switch
-    document.getElementById("latexToggleSwitch").addEventListener("change", function() {
-        if (this.checked) {
-            startLatexConversionInjectionTimer();
-        } else {
-            stopLatexConversionInjectionTimer();
-        }
-        saveSettings(controlDiv); // Save settings when changed
-    });
 
+    addListenerToLatexConversionToggleSwitch(controlDiv);
     loadSettings(controlDiv); // Load saved settings after UI is created
 }
 
