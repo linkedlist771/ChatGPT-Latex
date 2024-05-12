@@ -2,11 +2,12 @@
 // @name         🚀🚀LatexForChatGPT🚀🚀
 // @namespace         https://github.com/linkedlist771/ChatGPT-Latex
 // @supportURL        https://github.com/linkedlist771/ChatGPT-Latex
-// @version       0.0.4
+// @version       0.0.5
 // @description  latex for chatgpt
 // @author       LLinkedList771
 // @run-at       document-start
 // @match        https://chat.openai.com/*
+// @match        https://chatgpt.com/*
 // @license      MIT
 // @icon         data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="2" fill="none" stroke="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
 
@@ -24,7 +25,7 @@
     let gpt4InjectionInterval;
     function replaceLatexBlock(inputString) {
         const inputSize = inputString.length;
-        let newString = inputString.split(''); 
+        let newString = inputString.split('');
         for (let i = 0; i < inputSize - 1; i++) {
              if(inputString[i] == '\\' && inputString[i+1] == '[') {
                 newString[i] = '$';
@@ -35,9 +36,9 @@
                 newString[i+1] = '$';
              }
         }
-        return newString.join(''); 
+        return newString.join('');
     }
-    
+
     function chatgptOutputStringToLatex(inputString) {
         // Convert \( ... \) to $
         // do it one by one
@@ -46,7 +47,7 @@
         // 3.replace \[ with $$
         // 4.replace \] with $$
         let result = inputString.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-        
+
         // Convert \[ ... \] to $$
         // result = result.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
         result = replaceLatexBlock(result);
@@ -55,7 +56,7 @@
 
     function findAllCopyButtons() {
         // class : flex ml-auto
-        const copyButtons = document.querySelectorAll('button.flex'); //flex items-center
+        const copyButtons = document.querySelectorAll('button'); //flex items-center
         return copyButtons;
     }
 
@@ -69,7 +70,7 @@
                     navigator.clipboard.readText().then(clipText => {
                         // Transform the LaTeX delimiters
                         const modifiedText = chatgptOutputStringToLatex(clipText);
-    
+
                         // Copy the modified text back to the clipboard
                         navigator.clipboard.writeText(modifiedText);
                     });
